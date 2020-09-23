@@ -20,13 +20,24 @@ public class Vocabulary{
 	InputStream inputStreamDC = fs.open(pathDocCount);
 	InputStream inputStreamWE = fs.open(pathWordEnum);
 
-	Scanner dc = new Scanner(inputStream).useDelimiter("\\A");
+	Scanner dc = new Scanner(inputStreamDC).useDelimiter("\\A");
 	String dcText = dc.hasNext() ? dc.next() : "";
-	String[] lines = dcText.split("\n");
-	for (String line : lines){
-		String[] elements = line.split("\t");
-		System.out.println(elements[0] + " # " + elements[1]);
+	String[] dcTextLines = dcText.split("\n");
 
+	Scanner we = new Scanner(inputStreamWE).useDelimiter("\\A");
+	String weText = we.hasNext() ? we.next() : "";
+	String[] weTextLines = weText.split("\n");
+
+	HashMap<String, ArrayList<Integer>> hmap = new HashMap<String, ArrayList<Integer>>();
+
+	for (int i=0; i<weTextLines.length; i++){
+		String[] weElements = weTextLines[i].split("\t");
+		String[] dcElements = dcTextLines[i].split("\t");
+		ArrayList<Integer> nums = new ArrayList<Integer>();
+
+		nums.add(dcElements[1]);
+		nums.add(weElements[1]);
+		hmap.put(weElements[0], nums);
 	}
 	fs.close();
      }
