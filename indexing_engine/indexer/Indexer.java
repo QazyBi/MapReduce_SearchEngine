@@ -61,7 +61,7 @@ public class Indexer {
         }
     }
     public static class IntReduce
-            extends Reducer<IntWritable,Text,IntWritable,ArrayList> {
+            extends Reducer<IntWritable,Text,IntWritable,Text> {
         public void reduce(IntWritable key, Iterable<Text> values,
                            Context context
         ) throws IOException, InterruptedException {
@@ -78,30 +78,32 @@ public class Indexer {
             String dcText = dc.hasNext() ? dc.next() : "";
             String[] dcTextLines  = dcText.split("\n");
             ///
-
-            ArrayList<FloatWritable> vector = instance.make_vector(map, dcTextLines);
-
-
-
+	    String str = "";
+            Text vector_text = new Text();
+	    ArrayList<FloatWritable> vector = instance.make_vector(map, dcTextLines);
+	    for (FloatWritable fw : vector){
+		str += fw.get();
+	    }
+	    vector_text.set(str);
 //            IntWritable result = new IntWritable(1);
 //            int total = 0;
 //            for (IntWritable elem : values){
 //                total += elem.get();
 //            }
 //            result.set(total);
-            context.write(key, vector);
+            context.write(key, vector_text);
         }
     }
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "doc count");
+        Job job = Job.getInstance(conf, "indexer");
         job.setJarByClass(Indexer.class);
         job.setMapperClass(TokenizerMapper.class);
 //    job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntReduce.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));

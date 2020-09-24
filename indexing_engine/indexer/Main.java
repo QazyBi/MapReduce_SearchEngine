@@ -17,10 +17,10 @@ public class Main
         uniqueKeys = getUniqueKeys(keys);
         for(Text key: uniqueKeys)
         {
-//            if(null == key)
-//            {
-//                break;
-//            }
+            if(null == key)
+            {
+                break;
+            }
             for(Text s : keys)
             {
                 if(key.equals(s))
@@ -37,39 +37,58 @@ public class Main
     public static ArrayList<Text> getUniqueKeys(ArrayList<Text> keys)
     {
         ArrayList<Text> uniqueKeys = new ArrayList<Text>(keys.size());
-        uniqueKeys.set(0, keys.get(0));
-        int uniqueKeyIndex = 1;
-        boolean keyAlreadyExists = false;
-        for(int i=1; i<keys.size(); i++)
-        {
-            for(int j=0; j<=uniqueKeyIndex; j++)
-            {
-                if(keys.get(i).equals(uniqueKeys.get(j)))
-                {
-                    keyAlreadyExists = true;
-                }
-            }
-            if(!keyAlreadyExists)
-            {
-                uniqueKeys.set(uniqueKeyIndex, keys.get(i));
-                uniqueKeyIndex++;
-            }
-            keyAlreadyExists = false;
-        }
-        return uniqueKeys;
+	if (keys == null  || keys.isEmpty()){
+		return uniqueKeys;
+	}else{
+	     try{
+        	uniqueKeys.set(0, keys.get(0));
+	     }
+	     catch (IndexOutOfBoundsException e){
+		return uniqueKeys;
+	     }
+        	int uniqueKeyIndex = 1;
+        	boolean keyAlreadyExists = false;
+        	for(int i=1; i<keys.size(); i++)
+	        {
+        	    for(int j=0; j<uniqueKeyIndex; j++)
+    		    {
+                	if(keys.get(i).equals(uniqueKeys.get(j)))
+                	{
+                    		keyAlreadyExists = true;
+		    		break;
+                	}
+    		    }
+            	    if(!keyAlreadyExists)
+    		    {
+                	uniqueKeys.set(uniqueKeyIndex, keys.get(i));
+                	uniqueKeyIndex++;
+            	    }
+            		keyAlreadyExists = false;
+        	}
+        	return uniqueKeys;
+	}
     }
 
     public static ArrayList<FloatWritable> make_vector(Map<Text, IntWritable> map, String[] dcTextLines ){
-        Integer len = dcTextLines.length;
-        ArrayList<FloatWritable> vector = new ArrayList<FloatWritable>(len);
-        for (int i=0; i<len; i++){
-            String[] dcElements = dcTextLines[i].split("\t");
-            Integer tf = map.get(dcElements[0]).get();
-            Integer idf = Integer.parseInt(dcElements[1]);
-            FloatWritable ratio = new FloatWritable((float)tf / idf);
-            vector.set(i, ratio);
-        }
-        return vector;
+	try { 
+		Integer len = dcTextLines.length;
+        	ArrayList<FloatWritable> vector = new ArrayList<FloatWritable>(len);
+        	for (int i=0; i<len; i++){
+            		String[] dcElements = dcTextLines[i].split("\t");
+            		Integer tf = map.get(dcElements[0]).get();
+            		Integer idf = Integer.parseInt(dcElements[1]);
+            		FloatWritable ratio = new FloatWritable((float)tf / idf);
+            		vector.set(i, ratio);
+        	}
+        	return vector;
+	}catch(NullPointerException e){
+		return new ArrayList<FloatWritable>(0);
+	}
     }
+
+//	public static Map<IntWritable, FloatWritable> inner_product(String[] IndTextLines, FloatWritable query_vector){
+//		return 
+//	}
+
     public static void main(String[] args) {}
 }
