@@ -1,0 +1,71 @@
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.FloatWritable;
+import org.apache.hadoop.io.IntWritable;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main
+{    public static Map<text, Integer> tf(Iterable<Text> words)
+    {
+        Map<Text, Integer> map = new HashMap<String, Integer>();
+        Iterable<Text> keys = words.clone();
+        Iterable<Text> uniqueKeys;
+        int count = 0;
+        uniqueKeys = getUniqueKeys(keys);
+        for(Text key: uniqueKeys)
+        {
+//            if(null == key)
+//            {
+//                break;
+//            }
+            for(Text s : keys)
+            {
+                if(key.equals(s))
+                {
+                    count++;
+                }
+            }
+            map.put(key, count);
+            count=0;
+        }
+        return map;
+    }
+
+    private static String[] getUniqueKeys(String[] keys)
+    {
+        String[] uniqueKeys = new String[keys.length];
+        uniqueKeys[0] = keys[0];
+        int uniqueKeyIndex = 1;
+        boolean keyAlreadyExists = false;
+        for(int i=1; i<keys.length ; i++)
+        {
+            for(int j=0; j<=uniqueKeyIndex; j++)
+            {
+                if(keys[i].equals(uniqueKeys[j]))
+                {
+                    keyAlreadyExists = true;
+                }
+            }
+            if(!keyAlreadyExists)
+            {
+                uniqueKeys[uniqueKeyIndex] = keys[i];
+                uniqueKeyIndex++;
+            }
+            keyAlreadyExists = false;
+        }
+        return uniqueKeys;
+    }
+
+    private static Iterable<FloatWritable> make_vector(Map<Text, IntWritable> map, String[] dcTextLines ){
+        Integer len = dcTextLines.length;
+        Iterable<FloatWritable> vector = new Iterable<FloatWritable>(len);
+        for (int i=0; i<len; i++){
+            String[] dcElements = dcTextLines[i].split("\t");
+            Integer tf = map.get(dcElements[0]);
+            Integer idf = dcElements[1];
+            FloatWritable ratio = tf / idf;
+            vector[i] = ratio;
+        }
+        return vector;
+    }
+}
